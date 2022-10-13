@@ -5,9 +5,7 @@
 			button-text="&lt;"
 			v-if="state.pages > 1"
 			@click="
-				state.currentPage > 1
-					? --state.currentPage
-					: (state.currentPage = state.pages)
+				goToPage(state.currentPage > 1 ? state.currentPage - 1 : state.pages)
 			" />
 		<div class="pagination__pages" v-if="width > 450">
 			<Button
@@ -75,9 +73,7 @@
 			button-text=">"
 			v-if="state.pages > 1"
 			@click="
-				state.currentPage < state.pages
-					? ++state.currentPage
-					: (state.currentPage = 1)
+				goToPage(state.currentPage < state.pages ? state.currentPage + 1 : 1)
 			" />
 	</div>
 </template>

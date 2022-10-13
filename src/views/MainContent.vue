@@ -7,11 +7,6 @@
 <script lang="ts" setup>
 import Table from '@/components/MainContent/Table.vue'
 import Filters from '@/components/MainContent/Filters.vue'
-import { FilterValues } from '@/models/filterValues'
-
-function filterTable(value: FilterValues) {
-	console.log('filter ', value)
-}
 </script>
 <style lang="scss" scoped>
 .main-content {

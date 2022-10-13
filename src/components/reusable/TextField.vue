@@ -15,7 +15,6 @@
 </template>
 <script lang="ts" setup>
 import { useStore } from '@/stores/store'
-import { reactive, watch } from 'vue'
 
 interface Props {
 	placeholder: string
