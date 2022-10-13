@@ -1,3 +1,3 @@
 export interface ComponentState {
-    [name: string]: any;
-  }
+	[name: string]: any
+}
