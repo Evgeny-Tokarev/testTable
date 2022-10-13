@@ -1,50 +1,77 @@
 <template>
-  <div class="dropdown">
-    <h3 :for="props.placeholder" class="dropdown__title">
-      {{ props.placeholder }}
+  <div
+    class="dropdown"
+    :class="state.showMenu ? 'dropdown_expanded' : ''"
+    v-click-outside="closeMenu"
+    ref="menu"
+  >
+    <h3 :for="props.heading" class="dropdown__title">
+      {{ props.heading }}
     </h3>
     <div class="dropdown__menu">
-      <h4 class="dropdown__placeholder">{{ state.selectedItem }}</h4>
-      <div
-        class="dropdown__arrow-button"
-        :class="state.showMenu ? 'dropdown__arrow-button_activated' : ''"
+      <h4 class="dropdown__placeholder">
+        {{
+          store.filter[props.filterType]
+            ? $t(`filters.items.${store.filter[props.filterType]}`)
+            : ""
+        }}
+      </h4>
+      <button
+        class="dropdown__reset-button"
+        v-if="state.selectedItem"
+        @click="store.filter[props.filterType] = ''"
+      ></button>
+      <button
+        class="dropdown__expand-button"
         @click="state.showMenu = !state.showMenu"
-      ></div>
+      ></button>
     </div>
-    <ul
-      class="dropdown__list"
-      :class="state.showMenu ? 'dropdownt__list_shown' : ''"
-    >
+    <ul class="dropdown__list">
       <li
         class="dropdown__menu-item"
         v-for="(item, idx) in props.items"
         :key="idx"
+        @click="setItem(item)"
       >
-        {{ item }}
+        {{ $t(`filters.items.${item}`) }}
       </li>
     </ul>
-
-    <div class="dropdown__select-arrow"></div>
   </div>
 </template>
 <script lang="ts" setup>
-import { reactive } from "vue";
+import { reactive, ref } from "vue";
 import { ComponentState } from "@/models/componentState";
+import { useStore } from "@/stores/store";
+import { type ColumnItems, type ConditionItems } from "@/models/filterValues";
+
 interface Props {
-  placeholder: string;
-  items: string[];
+  filterType: "column" | "condition";
+  heading: string;
+  items: (ConditionItems | ColumnItems)[];
 }
+
+const store = useStore();
+const menu = ref<HTMLElement | null>(null);
 const props = defineProps<Props>();
+
 const state: ComponentState = reactive({
-  selectedItem: props.items[0],
   showMenu: false,
 });
+function closeMenu() {
+  window.setTimeout(() => {
+    state.showMenu = false;
+  }, 0);
+}
+function setItem(item: any) {
+  store.filter[props.filterType] = item;
+}
 </script>
 
 <style lang="scss" scoped>
 .dropdown {
   width: 300px;
-  color: black;
+  position: relative;
+  z-index: 1;
   &__title {
     color: var(--text-color);
   }
@@ -54,22 +81,39 @@ const state: ComponentState = reactive({
     padding: 0 10px;
     align-items: center;
     background-color: var(--bg-color);
-    border: 1px solid var(--text-color);
+    border: 2px solid var(--text-color);
     border-radius: 5px;
     height: 40px;
   }
-  &__list {
-    list-style: none;
-    padding: none;
-    display: none;
-  }
-  &__list_shown {
-    display: flex;
-  }
+
   &__placeholder {
     color: var(--text-color);
   }
-  &__arrow-button {
+  &__reset-button {
+    position: relative;
+    margin-left: auto;
+    margin-right: 20px;
+    cursor: pointer;
+    width: 25px;
+    height: 25px;
+  }
+
+  &__reset-button:before,
+  &__reset-button:after {
+    position: absolute;
+    left: 15px;
+    content: " ";
+    height: 25px;
+    width: 2px;
+    background-color: var(--text-color);
+  }
+  &__reset-button:before {
+    transform: rotate(45deg);
+  }
+  &__reset-button:after {
+    transform: rotate(-45deg);
+  }
+  &__expand-button {
     width: 20px;
     height: 20px;
     border-left: 2px solid var(--text-color);
@@ -78,9 +122,53 @@ const state: ComponentState = reactive({
     cursor: pointer;
     transition: all 0.5s;
   }
-  &__arrow-button_activated {
-    transform: rotate(225deg) translateX(5px);
+  &__list {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    overflow: hidden;
+    list-style: none;
+    padding: 0;
+    top: calc(100% - 2px);
+    left: 5px;
+    right: 5px;
+    background-color: var(--bg-color);
+    border: 1px solid var(--text-color);
+    border-radius: 0 0 5px 5px;
     transition: all 0.5s;
+  }
+  &__menu-item {
+    padding: 0 10px;
+    max-height: 0;
+    line-height: 32px;
+    transition: max-height 0.5s;
+    cursor: pointer;
+  }
+  &__menu-item:hover {
+    background: var(--hover-bg);
+    transition: all 0.5s;
+  }
+  &_expanded {
+    .dropdown__menu {
+      border-radius: 5px 5px 0 0;
+    }
+
+    .dropdown__expand-button {
+      transform: rotate(225deg) translateX(5px);
+      transition: all 0.5s;
+    }
+    .dropdown__list {
+      box-shadow: 0 6px 15px -5px var(--text-color);
+      display: flex;
+      flex-direction: column;
+      left: 0;
+      right: 0;
+      transition: all 0.5s;
+    }
+    .dropdown__menu-item {
+      max-height: 32px;
+      transition: all 0.5s;
+    }
   }
 }
 </style>

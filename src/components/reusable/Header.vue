@@ -31,7 +31,7 @@ const setTheme = (theme: string) => {
 };
 </script>
 <style lang="scss" scoped>
-@import "@/assets/styles/base.scss";
+@import "@/assets/styles/main.scss";
 .menu {
   display: flex;
   justify-content: space-between;

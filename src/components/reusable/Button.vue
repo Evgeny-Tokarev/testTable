@@ -9,14 +9,13 @@
   </button>
 </template>
 <script lang="ts" setup>
-import { ref, reactive, computed } from "vue";
-import { State } from "@/components/models";
+import { ref } from "vue";
 
 const button = ref<HTMLButtonElement | null>(null);
 defineExpose({ button });
 
 interface Props {
-  buttonText?: string;
+  buttonText?: string | number;
   active?: boolean;
 }
 
@@ -24,7 +23,6 @@ const emit = defineEmits<{
   (e: "click", target: HTMLButtonElement): void;
 }>();
 const props = defineProps<Props>();
-const state: State = reactive({});
 
 function clickHandler(e: MouseEvent | TouchEvent) {
   e.preventDefault();
@@ -33,7 +31,7 @@ function clickHandler(e: MouseEvent | TouchEvent) {
 }
 </script>
 <style lang="scss" scoped>
-@import "@/assets/styles/base.scss";
+@import "@/assets/styles/main.scss";
 
 .custom-button {
   display: flex;
@@ -49,22 +47,6 @@ function clickHandler(e: MouseEvent | TouchEvent) {
   outline: none;
 }
 
-.custom-button_type_transparent {
-  color: gray;
-  border: 1px solid gray;
-  background-color: transparent;
-}
-
-.custom-button_type_filled {
-  color: #ffffff;
-  border: 1px solid gray;
-  background-color: gray;
-}
-
-.custom-button:active {
-  box-shadow: inset 1px 1px 10px #333;
-}
-
 .custom-button_type_elevated {
   position: relative;
   transition: all 0.2s;
@@ -73,10 +55,10 @@ function clickHandler(e: MouseEvent | TouchEvent) {
 .custom-button_type_elevated::after {
   content: "";
   position: absolute;
-  width: 80%;
-  height: 70%;
+  width: 70%;
+  height: 50%;
   left: 15%;
-  bottom: -10px;
+  bottom: -5px;
   z-index: -1;
   background: var(--text-color);
   opacity: 0.7;
@@ -97,11 +79,5 @@ function clickHandler(e: MouseEvent | TouchEvent) {
   margin-top: 4px;
   margin-bottom: -4px;
   transition: all 0.2s;
-}
-
-@media screen and (min-width: 600px) {
-  .custom-button_type_transparent {
-    color: var(--text-color);
-  }
 }
 </style>

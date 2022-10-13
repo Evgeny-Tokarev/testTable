@@ -18,7 +18,11 @@
         </tr>
       </tbody>
     </table>
-    <Pagination />
+    <Pagination
+      :pages="Math.floor(state.filteredRows.length / state.rowsPerPage)"
+      :currentPage="state.currentPage"
+      @page-change="(page: number) => (state.currentPage = page)"
+    />
   </div>
 </template>
 <script lang="ts" setup>
@@ -32,13 +36,52 @@ const store = useStore();
 const state: ComponentState = reactive({
   currentPage: 1,
   rowsPerPage: 5,
-  paginatedRows: computed(() =>
-    store.data.filter(
-      (row, idx) =>
+  filteredRows: store.data,
+  paginatedRows: computed(() => {
+    console.log(
+      state.filteredRows.filter(
+        (_: any, idx: number) =>
+          idx + 1 <= state.currentPage * state.rowsPerPage &&
+          idx + 1 > (state.currentPage - 1) * state.rowsPerPage
+      ).length
+    );
+    return state.filteredRows.filter(
+      (_: any, idx: number) =>
         idx + 1 <= state.currentPage * state.rowsPerPage &&
         idx + 1 > (state.currentPage - 1) * state.rowsPerPage
-    )
-  ),
+    );
+  }),
+});
+const floatRegex = /^[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)$/;
+store.$subscribe(() => {
+  state.filteredRows = store.data.filter((row) => {
+    if (store.filter.column && store.filter.condition && store.filter.value) {
+      switch (store.filter.condition) {
+        case "equals":
+          return row[store.filter.column] === store.filter.value;
+        case "contains":
+          return row[store.filter.column].includes(store.filter.value);
+        case "greater":
+          if (
+            floatRegex.test(row[store.filter.column]) &&
+            floatRegex.test(store.filter.value)
+          ) {
+            return (
+              Number(row[store.filter.column]) > Number(store.filter.value)
+            );
+          } else return row[store.filter.column] > store.filter.value;
+        case "less":
+          if (
+            floatRegex.test(row[store.filter.column]) &&
+            floatRegex.test(store.filter.value)
+          ) {
+            return (
+              Number(row[store.filter.column]) < Number(store.filter.value)
+            );
+          } else return row[store.filter.column] < store.filter.value;
+      }
+    } else return true;
+  });
 });
 </script>
 <style lang="scss" scoped>
@@ -46,11 +89,11 @@ const state: ComponentState = reactive({
 .table {
   padding-top: 25px;
   height: calc(100vh - 5rem);
-  background-color: var(--bg-color);
 
   table {
     width: 100%;
     border-collapse: collapse;
+    box-shadow: 0 6px 15px -5px var(--text-color);
   }
   thead {
     height: 50px;
