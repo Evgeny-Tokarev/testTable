@@ -9,6 +9,7 @@ import { vClickOutside } from "@/directives/clickOutside"
 const i18n = createI18n({
 	allowComposition: true,
 	locale: "en",
+	fallbackLocale: "en",
 	messages,
 })
 const app = createApp(App)

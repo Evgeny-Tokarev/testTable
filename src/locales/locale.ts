@@ -18,7 +18,7 @@ const messages = {
 		table: {
 			header: {
 				date: "Date",
-				title: "Name",
+				title: "Title",
 				quantity: "Quantity",
 				distance: "Distance",
 			},
