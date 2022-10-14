@@ -6,7 +6,12 @@
 					<tr>
 						<th>
 							<div class="table__th-inner">
-								<h4>{{ $t('table.header.date') }}</h4>
+								<h4
+									:style="{
+										marginTop: 'auto',
+									}">
+									{{ $t('table.header.date') }}
+								</h4>
 							</div>
 						</th>
 						<th>
